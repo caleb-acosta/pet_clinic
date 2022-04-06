@@ -1,0 +1,15 @@
+    <div class="main">
+        <div class="card">
+              <div class="firstinfo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Veterinary_symbol.svg/1200px-Veterinary_symbol.svg.png"/>
+                <div class="profileinfo">
+                  <h1><%= @health_expert.name %></h1>
+                  <h3>Age: <%= @health_expert.age %></h3>
+                  <h3>Emal: <%= @health_expert.email %></h3>
+                  <h3>Sex: <%= @health_expert.sex %></h3>
+                  <h3>Specialities: <%= @health_expert.specialities %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+<span><%= link "Edit", to: Routes.health_expert_path(@conn, :edit, @health_expert) %></span> |
+<span><%= link "Back", to: Routes.health_expert_path(@conn, :index) %></span>
