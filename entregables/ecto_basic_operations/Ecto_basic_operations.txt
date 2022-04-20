@@ -1,0 +1,193 @@
+# Alias e Imports
+
+iex(2)> alias PetClinic.PetClinicPets.Pet 
+PetClinic.PetClinicPets.Pet
+
+iex(3)> import Ecto.Query
+Ecto.Query
+
+iex(5)> alias PetClinic.Repo
+PetClinic.Repo
+
+----------------------------------------------------------
+
+# Crear 1 pet
+
+iex(4)> rocky = %Pet{name: "Rocky", type: "Dog", sex: "Male", age: 2}
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:built, "pets">,
+  age: 2,
+  id: nil,
+  inserted_at: nil,
+  name: "Rocky",
+  sex: "Male",
+  type: "Dog",
+  updated_at: nil
+}
+
+
+iex(6)> Repo.insert!(rocky)
+[debug] QUERY OK db=2.6ms decode=0.9ms queue=1.5ms idle=1636.3ms
+INSERT INTO "pets" ("age","name","sex","type","inserted_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6) RETURNING "id" [2, "Rocky", "Male", "Dog", ~N[2022-04-20 15:33:57], ~N[2022-04-20 15:33:57]]
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+  age: 2,
+  id: 1,
+  inserted_at: ~N[2022-04-20 15:33:57],
+  name: "Rocky",
+  sex: "Male",
+  type: "Dog",
+  updated_at: ~N[2022-04-20 15:33:57]
+}
+
+----------------------------------------------------------
+
+# Consultar todos los pets
+
+iex(10)> Repo.all(from p in Pet)
+[debug] QUERY OK source="pets" db=0.8ms idle=1166.4ms
+SELECT p0."id", p0."age", p0."name", p0."sex", p0."type", p0."inserted_at", p0."updated_at" FROM "pets" AS p0 []
+[
+  %PetClinic.PetClinicPets.Pet{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+    age: 2,
+    id: 1,
+    inserted_at: ~N[2022-04-20 15:33:57], 
+    name: "Rocky",
+    sex: "Male",
+    type: "Dog",
+    updated_at: ~N[2022-04-20 15:33:57]
+  },
+  %PetClinic.PetClinicPets.Pet{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+    age: 4,
+    id: 2,
+    inserted_at: ~N[2022-04-20 15:36:03],
+    name: "Garfield",
+    sex: "Male",
+    type: "Cat",
+    updated_at: ~N[2022-04-20 15:36:03]
+  },
+  %PetClinic.PetClinicPets.Pet{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+    age: 3,
+    id: 3,
+    inserted_at: ~N[2022-04-20 15:36:26],
+    name: "Skye",
+    sex: "Female",
+    type: "Dog",
+    updated_at: ~N[2022-04-20 15:36:26]
+  },
+  %PetClinic.PetClinicPets.Pet{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+    age: 99999,
+    id: 4,
+    inserted_at: ~N[2022-04-20 15:36:45],
+    name: "Smaug",
+    sex: "Male",
+    type: "Dragon",
+    updated_at: ~N[2022-04-20 15:36:45]
+  }
+]
+
+----------------------------------------------------------
+
+# Consultar pets con más de un criterio (Repo.all), usando también select y order_by
+
+iex(14)> Repo.all(from p in Pet,  select: [p.name, p.age, p.type], where: p.type != "Cat" and p.age > 2, order_by: p.age)
+[debug] QUERY OK source="pets" db=0.2ms queue=1.0ms idle=1318.1ms
+SELECT p0."name", p0."age", p0."type" FROM "pets" AS p0 WHERE ((p0."type" != 'Cat') AND (p0."age" > 2)) ORDER BY p0."age" []
+[["Skye", 3, "Dog"], ["Smaug", 99999, "Dragon"]]
+
+----------------------------------------------------------
+
+# Modificar en BD 1 atributo de 1 pet (consultar, crear changeset, actualizar)
+
+rocky = Repo.get(Pet, 1)
+[debug] QUERY OK source="pets" db=0.4ms idle=1168.1ms
+SELECT p0."id", p0."age", p0."name", p0."sex", p0."type", p0."inserted_at", p0."updated_at" FROM "pets" AS p0 WHERE (p0."id" = $1) [1]
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+  age: 2,
+  id: 1,
+  inserted_at: ~N[2022-04-20 15:33:57],
+  name: "Rocky",
+  sex: "Male",
+  type: "Dog",
+  updated_at: ~N[2022-04-20 15:33:57]
+}
+
+iex(18)> rocky = Ecto.Changeset.change rocky, type: "Cat"
+#Ecto.Changeset<
+  action: nil,
+  changes: %{type: "Cat"},
+  errors: [],
+  data: #PetClinic.PetClinicPets.Pet<>,
+  valid?: true
+>
+
+Repo.update!(rocky)
+[debug] QUERY OK db=8.1ms queue=0.3ms idle=1345.5ms
+UPDATE "pets" SET "type" = $1, "updated_at" = $2 WHERE "id" = $3 ["Cat", ~N[2022-04-20 15:48:43], 1]
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+  age: 2,
+  id: 1,
+  inserted_at: ~N[2022-04-20 15:33:57],
+  name: "Rocky",
+  sex: "Male",
+  type: "Cat",
+  updated_at: ~N[2022-04-20 15:48:43]
+}
+
+----------------------------------------------------------
+
+# Corroborar el cambio anterior usando Repo.get!
+
+iex(20)> rocky = Repo.get(Pet, 1)                        
+[debug] QUERY OK source="pets" db=0.7ms idle=1088.0ms
+SELECT p0."id", p0."age", p0."name", p0."sex", p0."type", p0."inserted_at", p0."updated_at" FROM "pets" AS p0 WHERE (p0."id" = $1) [1]
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+  age: 2,
+  id: 1,
+  inserted_at: ~N[2022-04-20 15:33:57],
+  name: "Rocky",
+  sex: "Male",
+  type: "Cat",
+  updated_at: ~N[2022-04-20 15:48:43]
+}
+
+----------------------------------------------------------
+
+# Borrar un pet
+
+iex(24)> garfield = Repo.get!(Pet, 2)
+[debug] QUERY OK source="pets" db=0.7ms idle=1009.8ms
+SELECT p0."id", p0."age", p0."name", p0."sex", p0."type", p0."inserted_at", p0."updated_at" FROM "pets" AS p0 WHERE (p0."id" = $1) [2]
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "pets">,
+  age: 4,
+  id: 2,
+  inserted_at: ~N[2022-04-20 15:36:03],
+  name: "Garfield",
+  sex: "Male",
+  type: "Cat",
+  updated_at: ~N[2022-04-20 15:36:03]
+}
+
+iex(25)> Repo.delete!(garfield)
+[debug] QUERY OK db=7.8ms queue=0.3ms idle=1408.3ms
+DELETE FROM "pets" WHERE "id" = $1 [2]
+%PetClinic.PetClinicPets.Pet{
+  __meta__: #Ecto.Schema.Metadata<:deleted, "pets">,
+  age: 4,
+  id: 2,
+  inserted_at: ~N[2022-04-20 15:36:03],
+  name: "Garfield",
+  sex: "Male",
+  type: "Cat",
+  updated_at: ~N[2022-04-20 15:36:03]
+}
+
+
