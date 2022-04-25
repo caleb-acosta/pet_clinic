@@ -5,15 +5,15 @@ defmodule PetClinic.PetClinicPets.Pet do
   schema "pets" do
     field :age, :integer
     field :name, :string
-    field :sex, :string
+    field :sex, Ecto.Enum, values: [:male, :female]
     field :type, :string
     belongs_to :owner, PetClinic.PetClinicPetOwner.Owner
-    belongs_to(:preferred_expert, PetClinic.PetHealthExpert.HealthExpert, foreign_key: :health_expert_id)
+    belongs_to :preferred_expert, PetClinic.PetHealthExpert.HealthExpert 
     timestamps()
   end
 
   @doc false
-  def changeset(pet, attrs) do
+  def changeset(pet, attrs \\ %{}) do
     pet
     |> cast(attrs, [:name, :age, :type, :sex])
     |> validate_required([:name, :age, :type, :sex])

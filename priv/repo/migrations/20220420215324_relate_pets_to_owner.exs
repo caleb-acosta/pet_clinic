@@ -1,4 +1,4 @@
-defmodule PetClinic.Repo.Migrations.RealtePetsToOwner do
+defmodule PetClinic.Repo.Migrations.RelatePetsToOwner do
   use Ecto.Migration
 
   def change do
