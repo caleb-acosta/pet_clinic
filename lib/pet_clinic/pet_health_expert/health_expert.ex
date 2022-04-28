@@ -10,7 +10,7 @@ defmodule PetClinic.PetHealthExpert.HealthExpert do
     many_to_many :specialities, PetClinic.PetClinicPets.PetType,
       join_through: PetClinic.PetHealthExpert.ExpertSpecialities
     has_many :patients, PetClinic.PetClinicPets.Pet, foreign_key: :preferred_expert_id
-    
+    has_many :schedule, PetClinic.ExpertSchedules.ExpertSchedule    
     timestamps()
   end
 
