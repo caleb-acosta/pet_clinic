@@ -18,7 +18,7 @@
       <td><%= health_expert.name %></td>
       <td><%= health_expert.age %></td>
       <td><%= health_expert.email %></td>
-      <td><%= health_expert.specialities %></td>
+      <td><%= Enum.map(health_expert.specialities, &(&1.name)) |> Enum.join(", ") %></td>
       <td><%= health_expert.sex %></td>
 
       <td>

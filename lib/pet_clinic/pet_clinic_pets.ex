@@ -5,7 +5,7 @@ defmodule PetClinic.PetClinicPets do
 
   import Ecto.Query, warn: false
   alias PetClinic.Repo
-
+  alias PetClinic.PetClinicPets.PetType
   alias PetClinic.PetClinicPets.Pet
 
   @doc """
@@ -18,9 +18,13 @@ defmodule PetClinic.PetClinicPets do
 
   """
   def list_pets do
-    Repo.all(Pet)
+    Repo.all(Pet) |> Repo.preload(:type)
   end
 
+
+  def list_pet_types do
+    Repo.all(PetType)
+  end
   @doc """
   Gets a single pet.
 
@@ -35,7 +39,7 @@ defmodule PetClinic.PetClinicPets do
       ** (Ecto.NoResultsError)
 
   """
-  def get_pet!(id), do: Repo.get!(Pet, id)
+  def get_pet!(id), do: Repo.get!(Pet, id) |> Repo.preload(:type)
 
   @doc """
   Creates a pet.

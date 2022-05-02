@@ -3,6 +3,7 @@ defmodule PetClinicWeb.PetController do
 
   alias PetClinic.PetClinicPets
   alias PetClinic.PetClinicPets.Pet
+  alias PetClinic.PetClinicPets.PetType
 
   def index(conn, _params) do
     pets = PetClinicPets.list_pets()
@@ -11,7 +12,8 @@ defmodule PetClinicWeb.PetController do
 
   def new(conn, _params) do
     changeset = PetClinicPets.change_pet(%Pet{})
-    render(conn, "new.html", changeset: changeset)
+    pet_types = PetClinicPets.list_pet_types()
+    render(conn, "new.html", changeset: changeset, pet_types: pet_types)
   end
 
   def create(conn, %{"pet" => pet_params}) do
@@ -27,14 +29,15 @@ defmodule PetClinicWeb.PetController do
   end
 
   def show(conn, %{"id" => id}) do
-    pet = PetClinicPets.get_pet!(id)
+    pet = PetClinicPets.get_pet!(id) 
     render(conn, "show.html", pet: pet)
   end
 
   def edit(conn, %{"id" => id}) do
     pet = PetClinicPets.get_pet!(id)
+    pet_types = PetClinicPets.list_pet_types()
     changeset = PetClinicPets.change_pet(pet)
-    render(conn, "edit.html", pet: pet, changeset: changeset)
+    render(conn, "edit.html", pet: pet, changeset: changeset, pet_types: pet_types)
   end
 
   def update(conn, %{"id" => id, "pet" => pet_params}) do

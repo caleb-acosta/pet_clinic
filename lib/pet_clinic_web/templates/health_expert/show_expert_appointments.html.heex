@@ -1,0 +1,23 @@
+<h1>Listing Appointments for <%= @expert.name %> on <%= @date %></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Pet</th>
+      <th>Owner</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for appointment <- @appointments do %>
+    <tr>
+      <td><%= NaiveDateTime.to_time(appointment.date_time) %></td>
+      <td><%= Enum.find(@pets, &(appointment.pet_id == &1.id)).name %></td>
+      <td><%= Enum.find(@owners, fn o -> o.id == Enum.find(@pets, &(appointment.pet_id == &1.id)).owner_id end).name %></td>
+      <td><%= Enum.find(@pets, &(appointment.pet_id == &1.id)).type.name %></td>
+      <td></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>

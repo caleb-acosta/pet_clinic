@@ -15,8 +15,9 @@ defmodule PetClinic.PetClinicPets.Pet do
   @doc false
   def changeset(pet, attrs \\ %{}) do
     pet
-    |> cast(attrs, [:name, :age, :type, :sex])
-    |> validate_required([:name, :age, :type, :sex])
+    |> cast(attrs, [:name, :age, :type_id, :sex])
+    #|> cast_assoc(type:, with: PetClinic.PetClinicPets.PetType)
+    |> validate_required([:name, :age, :type_id, :sex])
     |> validate_number(:age, greater_than_or_equal_to: 0)
 
   end

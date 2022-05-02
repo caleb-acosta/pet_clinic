@@ -6,7 +6,7 @@
                   <h3>Age: <%= @health_expert.age %></h3>
                   <h3>Emal: <%= @health_expert.email %></h3>
                   <h3>Sex: <%= @health_expert.sex %></h3>
-                  <h3>Specialities: <%= @health_expert.specialities %></h3>
+                  <h3>Specialities: <%= Enum.map(@health_expert.specialities, &(&1.name)) |> Enum.join(", ") %></h3>
                 </div>
             </div>
         </div>

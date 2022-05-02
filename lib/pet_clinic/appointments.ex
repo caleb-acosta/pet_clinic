@@ -108,7 +108,13 @@ defmodule PetClinic.Appointments do
   #  query_schedule = from s in ExperSchedule, where: s.health_expert_id==expert_id
   #  schedule = Repo.all(query_schedule)
   #end
-  
+
+  def get_expert_appointments(expert_id, date) do
+    start_of_day = NaiveDateTime.new!(Date.from_iso8601!(date), ~T[00:00:00])
+    end_of_day = NaiveDateTime.new!(Date.from_iso8601!(date), ~T[23:59:59])
+    Repo.all(from a in Appointment, where: a.date_time < ^end_of_day, where: a.date_time > ^start_of_day, where: a.health_expert_id == ^expert_id)
+  end
+
   #Get list of slots available in a specific date
   def get_slots_day(expert_id, day) do
     working_schedule = Repo.get_by(ExpertSchedule, health_expert_id: expert_id, day: Timex.weekday(day))
