@@ -1,4 +1,7 @@
 defmodule PetClinic.PetClinicPetOwner.Owner do
+  @moduledoc """
+    Pet Owner Schema.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -126,7 +126,8 @@ defmodule PetClinic.Appointments do
   end
 
   def calculate_slots_day(expert_id, day, start_time, end_time, acc) when start_time <= end_time do
-    acc = unless (Repo.get_by(Appointment, health_expert_id: expert_id, date_time: NaiveDateTime.new!(day, start_time))) do
+    acc = 
+      if (Repo.get_by(Appointment, health_expert_id: expert_id, date_time: NaiveDateTime.new!(day, start_time))) != nil do
         [Time.truncate(start_time, :second) | acc]
       else
         acc
@@ -160,10 +161,10 @@ defmodule PetClinic.Appointments do
       NaiveDateTime.compare(appointment_date_time, NaiveDateTime.local_now()) == :lt ->
         {:error, "datetime is in the past"}
 
-      !(Repo.exists?(from p in Pet, where: p.id==^pet_id)) ->
+      !(Repo.exists?(from p in Pet, where: p.id == ^pet_id)) ->
         {:error, "pet with id = #{pet_id} doesn't exist"}
       
-      !(Repo.exists?(from h in HealthExpert, where: h.id==^expert_id)) ->
+      !(Repo.exists?(from h in HealthExpert, where: h.id == ^expert_id)) ->
         {:error, "expert with id = #{expert_id} doesn't exist"}
 
       Enum.member?(get_slots_day(expert_id, NaiveDateTime.to_date(appointment_date_time)), Time.truncate(NaiveDateTime.to_time(appointment_date_time), :second)) ->

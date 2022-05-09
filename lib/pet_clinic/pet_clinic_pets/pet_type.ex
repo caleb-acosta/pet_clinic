@@ -1,5 +1,8 @@
 defmodule PetClinic.PetClinicPets.PetType do
-    use Ecto.Schema
+  @moduledoc """
+    Pet Types Schema (Pet Species).
+  """
+  use Ecto.Schema
     
     schema "pet_types" do
       field :name, :string
