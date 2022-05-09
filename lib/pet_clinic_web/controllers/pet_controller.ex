@@ -29,7 +29,7 @@ defmodule PetClinicWeb.PetController do
   end
 
   def show(conn, %{"id" => id}) do
-    pet = PetClinicPets.get_pet!(id) 
+    pet = PetClinicPets.get_pet!(id)
     render(conn, "show.html", pet: pet)
   end
 
@@ -62,8 +62,9 @@ defmodule PetClinicWeb.PetController do
     |> put_flash(:info, "Pet deleted successfully.")
     |> redirect(to: Routes.pet_path(conn, :index))
   end
+
   def index_by_type(conn, %{"type" => type}) do
-    pets = PetClinicPets.list_pets_by_type(type)      
+    pets = PetClinicPets.list_pets_by_type(type)
     render(conn, "index_by_type.html", pets: pets, type: type)
   end
 end

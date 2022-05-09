@@ -18,7 +18,7 @@ defmodule PetClinic.PetHealthExpert do
 
   """
   def list_health_experts do
-    Repo.all(HealthExpert) |> Repo.preload(:specialities) 
+    Repo.all(HealthExpert) |> Repo.preload(:specialities)
   end
 
   @doc """

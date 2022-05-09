@@ -104,46 +104,67 @@ defmodule PetClinic.Appointments do
     Appointment.changeset(appointment, attrs)
   end
 
-  #def available_slots(expert_id, from_date, to_date) do
+  # def available_slots(expert_id, from_date, to_date) do
   #  query_schedule = from s in ExperSchedule, where: s.health_expert_id==expert_id
   #  schedule = Repo.all(query_schedule)
-  #end
+  # end
 
   def get_expert_appointments(expert_id, date) do
     start_of_day = NaiveDateTime.new!(Date.from_iso8601!(date), ~T[00:00:00])
     end_of_day = NaiveDateTime.new!(Date.from_iso8601!(date), ~T[23:59:59])
-    Repo.all(from a in Appointment, where: a.date_time < ^end_of_day, where: a.date_time > ^start_of_day, where: a.health_expert_id == ^expert_id)
+
+    Repo.all(
+      from a in Appointment,
+        where: a.date_time < ^end_of_day,
+        where: a.date_time > ^start_of_day,
+        where: a.health_expert_id == ^expert_id
+    )
   end
 
-  #Get list of slots available in a specific date
+  # Get list of slots available in a specific date
   def get_slots_day(expert_id, day) do
-    working_schedule = Repo.get_by(ExpertSchedule, health_expert_id: expert_id, day: Timex.weekday(day))
+    working_schedule =
+      Repo.get_by(ExpertSchedule, health_expert_id: expert_id, day: Timex.weekday(day))
+
     if working_schedule != nil do
-      calculate_slots_day(expert_id, day, working_schedule.from_hour, working_schedule.to_hour, [] )
+      calculate_slots_day(
+        expert_id,
+        day,
+        working_schedule.from_hour,
+        working_schedule.to_hour,
+        []
+      )
     else
       []
     end
   end
 
-  def calculate_slots_day(expert_id, day, start_time, end_time, acc) when start_time <= end_time do
-    acc = 
-      if (Repo.get_by(Appointment, health_expert_id: expert_id, date_time: NaiveDateTime.new!(day, start_time))) != nil do
+  def calculate_slots_day(expert_id, day, start_time, end_time, acc)
+      when start_time <= end_time do
+    acc =
+      if Repo.get_by(Appointment,
+           health_expert_id: expert_id,
+           date_time: NaiveDateTime.new!(day, start_time)
+         ) != nil do
         [Time.truncate(start_time, :second) | acc]
       else
         acc
-    end
+      end
+
     start_time = Time.add(start_time, 1800, :second)
     calculate_slots_day(expert_id, day, start_time, end_time, acc)
   end
+
   def calculate_slots_day(_, _, _, _, acc) do
     acc
-  end 
-  
+  end
+
   def calculate_slots_in_range(expert_id, start_day, end_day, acc) when start_day <= end_day do
     acc = Map.put(acc, start_day, get_slots_day(expert_id, start_day))
     start_day = Date.add(start_day, 1)
     calculate_slots_in_range(expert_id, start_day, end_day, acc)
   end
+
   def calculate_slots_in_range(_, _, _, acc) do
     acc
   end
@@ -151,7 +172,7 @@ defmodule PetClinic.Appointments do
   def available_slots(expert_id, from_date, to_date) do
     if Date.compare(from_date, to_date) == :gt do
       {:error, "wrong date range"}
-    else 
+    else
       calculate_slots_in_range(expert_id, from_date, to_date, %{})
     end
   end
@@ -161,18 +182,26 @@ defmodule PetClinic.Appointments do
       NaiveDateTime.compare(appointment_date_time, NaiveDateTime.local_now()) == :lt ->
         {:error, "datetime is in the past"}
 
-      !(Repo.exists?(from p in Pet, where: p.id == ^pet_id)) ->
+      !Repo.exists?(from p in Pet, where: p.id == ^pet_id) ->
         {:error, "pet with id = #{pet_id} doesn't exist"}
-      
-      !(Repo.exists?(from h in HealthExpert, where: h.id == ^expert_id)) ->
+
+      !Repo.exists?(from h in HealthExpert, where: h.id == ^expert_id) ->
         {:error, "expert with id = #{expert_id} doesn't exist"}
 
-      Enum.member?(get_slots_day(expert_id, NaiveDateTime.to_date(appointment_date_time)), Time.truncate(NaiveDateTime.to_time(appointment_date_time), :second)) ->
-        appointment = %Appointment{date_time: NaiveDateTime.truncate(appointment_date_time, :second), pet_id: pet_id, health_expert_id: expert_id}
+      Enum.member?(
+        get_slots_day(expert_id, NaiveDateTime.to_date(appointment_date_time)),
+        Time.truncate(NaiveDateTime.to_time(appointment_date_time), :second)
+      ) ->
+        appointment = %Appointment{
+          date_time: NaiveDateTime.truncate(appointment_date_time, :second),
+          pet_id: pet_id,
+          health_expert_id: expert_id
+        }
+
         Repo.insert(appointment)
+
       true ->
         {:error, "unavailable time slot"}
-      
     end
   end
 end

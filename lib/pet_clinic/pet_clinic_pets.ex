@@ -21,10 +21,10 @@ defmodule PetClinic.PetClinicPets do
     Repo.all(Pet) |> Repo.preload(:type)
   end
 
-
   def list_pet_types do
     Repo.all(PetType)
   end
+
   @doc """
   Gets a single pet.
 
@@ -105,6 +105,7 @@ defmodule PetClinic.PetClinicPets do
   def change_pet(%Pet{} = pet, attrs \\ %{}) do
     Pet.changeset(pet, attrs)
   end
+
   def list_pets_by_type(type) do
     Repo.all(from p in Pet, where: p.type == ^type)
   end

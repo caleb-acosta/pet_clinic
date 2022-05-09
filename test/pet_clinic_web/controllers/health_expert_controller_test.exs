@@ -3,8 +3,20 @@ defmodule PetClinicWeb.HealthExpertControllerTest do
 
   import PetClinic.PetHealthExpertFixtures
 
-  @create_attrs %{age: 42, email: "some email", name: "some name", sex: "some sex", specialities: "some specialities"}
-  @update_attrs %{age: 43, email: "some updated email", name: "some updated name", sex: "some updated sex", specialities: "some updated specialities"}
+  @create_attrs %{
+    age: 42,
+    email: "some email",
+    name: "some name",
+    sex: "some sex",
+    specialities: "some specialities"
+  }
+  @update_attrs %{
+    age: 43,
+    email: "some updated email",
+    name: "some updated name",
+    sex: "some updated sex",
+    specialities: "some updated specialities"
+  }
   @invalid_attrs %{age: nil, email: nil, name: nil, sex: nil, specialities: nil}
 
   describe "index" do
@@ -41,7 +53,10 @@ defmodule PetClinicWeb.HealthExpertControllerTest do
   describe "edit health_expert" do
     setup [:create_health_expert]
 
-    test "renders form for editing chosen health_expert", %{conn: conn, health_expert: health_expert} do
+    test "renders form for editing chosen health_expert", %{
+      conn: conn,
+      health_expert: health_expert
+    } do
       conn = get(conn, Routes.health_expert_path(conn, :edit, health_expert))
       assert html_response(conn, 200) =~ "Edit Health expert"
     end
@@ -51,7 +66,11 @@ defmodule PetClinicWeb.HealthExpertControllerTest do
     setup [:create_health_expert]
 
     test "redirects when data is valid", %{conn: conn, health_expert: health_expert} do
-      conn = put(conn, Routes.health_expert_path(conn, :update, health_expert), health_expert: @update_attrs)
+      conn =
+        put(conn, Routes.health_expert_path(conn, :update, health_expert),
+          health_expert: @update_attrs
+        )
+
       assert redirected_to(conn) == Routes.health_expert_path(conn, :show, health_expert)
 
       conn = get(conn, Routes.health_expert_path(conn, :show, health_expert))
@@ -59,7 +78,11 @@ defmodule PetClinicWeb.HealthExpertControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, health_expert: health_expert} do
-      conn = put(conn, Routes.health_expert_path(conn, :update, health_expert), health_expert: @invalid_attrs)
+      conn =
+        put(conn, Routes.health_expert_path(conn, :update, health_expert),
+          health_expert: @invalid_attrs
+        )
+
       assert html_response(conn, 200) =~ "Edit Health expert"
     end
   end

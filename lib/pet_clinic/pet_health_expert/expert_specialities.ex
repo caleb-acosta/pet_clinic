@@ -8,5 +8,4 @@ defmodule PetClinic.PetHealthExpert.ExpertSpecialities do
     field :health_expert_id, :integer
     field :pet_type_id, :integer
   end
-
 end

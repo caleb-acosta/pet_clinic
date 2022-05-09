@@ -62,11 +62,18 @@ defmodule PetClinicWeb.HealthExpertController do
     |> redirect(to: Routes.health_expert_path(conn, :index))
   end
 
-  def show_expert_appointments(conn, %{"id"=> id, "date" => date}) do
+  def show_expert_appointments(conn, %{"id" => id, "date" => date}) do
     appointments = PetClinic.Appointments.get_expert_appointments(id, date)
     expert = PetHealthExpert.get_health_expert!(id)
-    pets = Enum.map(appointments, &(PetClinicPets.get_pet!(&1.pet_id)))
+    pets = Enum.map(appointments, &PetClinicPets.get_pet!(&1.pet_id))
     owners = Enum.map(pets, &PetClinicPetOwner.get_owner!(&1.owner_id))
-    render(conn, "show_expert_appointments.html", owners: owners, pets: pets, appointments: appointments, date: date, expert: expert)
+
+    render(conn, "show_expert_appointments.html",
+      owners: owners,
+      pets: pets,
+      appointments: appointments,
+      date: date,
+      expert: expert
+    )
   end
 end

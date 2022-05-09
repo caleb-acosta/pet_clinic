@@ -35,13 +35,18 @@ defmodule PetClinic.AppointmentsTest do
       appointment = appointment_fixture()
       update_attrs = %{date_time: ~N[2022-04-27 16:03:00]}
 
-      assert {:ok, %Appointment{} = appointment} = Appointments.update_appointment(appointment, update_attrs)
+      assert {:ok, %Appointment{} = appointment} =
+               Appointments.update_appointment(appointment, update_attrs)
+
       assert appointment.date_time == ~N[2022-04-27 16:03:00]
     end
 
     test "update_appointment/2 with invalid data returns error changeset" do
       appointment = appointment_fixture()
-      assert {:error, %Ecto.Changeset{}} = Appointments.update_appointment(appointment, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Appointments.update_appointment(appointment, @invalid_attrs)
+
       assert appointment == Appointments.get_appointment!(appointment.id)
     end
 

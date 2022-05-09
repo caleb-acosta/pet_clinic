@@ -11,7 +11,7 @@ defmodule PetClinic.PetClinicPets.Pet do
     field :sex, Ecto.Enum, values: [:male, :female]
     belongs_to :type, PetClinic.PetClinicPets.PetType
     belongs_to :owner, PetClinic.PetClinicPetOwner.Owner
-    belongs_to :preferred_expert, PetClinic.PetHealthExpert.HealthExpert 
+    belongs_to :preferred_expert, PetClinic.PetHealthExpert.HealthExpert
     timestamps()
   end
 
@@ -19,9 +19,8 @@ defmodule PetClinic.PetClinicPets.Pet do
   def changeset(pet, attrs \\ %{}) do
     pet
     |> cast(attrs, [:name, :age, :type_id, :sex])
-    #|> cast_assoc(type:, with: PetClinic.PetClinicPets.PetType)
+    # |> cast_assoc(type:, with: PetClinic.PetClinicPets.PetType)
     |> validate_required([:name, :age, :type_id, :sex])
     |> validate_number(:age, greater_than_or_equal_to: 0)
-
   end
 end
